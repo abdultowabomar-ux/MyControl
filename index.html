@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم في الإتصال العكسي للأنظمة</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@900&family=Poppins:wght@900&family=Orbitron:wght@700&display=swap');
+
+        @keyframes rgb-bar-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes pulsate-neon {
+            0% { box-shadow: 0 0 10px rgba(0, 210, 255, 0.4), 0 0 20px rgba(0, 210, 255, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.6), 0 0 30px rgba(0, 210, 255, 0.4); }
+            100% { box-shadow: 0 0 10px rgba(0, 210, 255, 0.4), 0 0 20px rgba(0, 210, 255, 0.2); }
+        }
+
+        body {
+            background-color: #000000;
+            color: #e6edf3;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .command-center {
+            background: #080c10;
+            border: 2px solid #0f172a;
+            border-radius: 20px;
+            padding: 25px;
+            width: 90%;
+            max-width: 450px; /* حجم متوسط */
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: pulsate-neon 3s infinite ease-in-out;
+        }
+
+        /* شريط RGB العلوي للبوكس الرئيسي */
+        .top-rgb-bar {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 8px; /* شريط عريض */
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            background-size: 400% 400%;
+            animation: rgb-bar-animation 5s linear infinite; /* حركة أبطأ للعريض */
+            border-radius: 18px 18px 0 0;
+        }
+
+        .main-title {
+            font-family: 'Orbitron', sans-serif; /* خط تقني */
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: #58a6ff;
+            text-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+            margin-top: 15px; /* مسافة من الشريط العلوي */
+        }
+
+        .sub-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 18px; font-weight: 900; color: #c9d1d9;
+            display: block; margin-bottom: 25px;
+            border-bottom: 1px dashed #30363d;
+            padding-bottom: 15px;
+        }
+
+        /* حاوية بطاقات الأنظمة */
+        .systems-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .system-card {
+            background: #161b22;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            padding: 15px 10px;
+            border: 1px solid #30363d;
+            transition: 0.3s;
+        }
+
+        /* شريط RGB العلوي للبطاقات الصغيرة */
+        .system-card .rgb-line {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 3px; /* شريط رفيع */
+            background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+            background-size: 400% 400%;
+            animation: rgb-bar-animation 3s linear infinite;
+        }
+
+        .system-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 15px rgba(88, 166, 255, 0.4);
+        }
+
+        .system-card i { margin-top: 5px; }
+        .android { color: #3ddc84; }
+        .windows { color: #0078d4; }
+        .apple { color: #ffffff; }
+        .linux { color: #fcc624; }
+        .card-label { font-size: 11px; font-weight: bold; color: #8b949e; display: block; margin-top: 8px; }
+
+        /* قسم الإحصائيات الوهمية */
+        .stats-section {
+            background: #0f172a;
+            border: 1px solid #30363d;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap; /* للسماح بالعناصر بالنزول لسطر جديد */
+            gap: 15px; /* مسافة بين العناصر */
+        }
+
+        .stat-item {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 12px;
+            color: #8b949e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            min-width: 80px; /* لضمان حجم ثابت */
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00d2ff;
+        }
+
+        /* أزرار التحكم */
+        .control-btns { display: flex; flex-direction: column; gap: 15px; }
+        .btn {
+            padding: 18px; border-radius: 14px; border: none;
+            font-size: 18px; font-weight: 900; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: 0.2s; color: white;
+        }
+        .btn-lock { background: #b91c1c; }
+        .btn-lock:hover { background: #dc2626; }
+        .btn-unlock { background: #15803d; }
+        .btn-unlock:hover { background: #16a34a; }
+        .btn:active { transform: scale(0.95); }
+
+        .status-text {
+            margin-top: 20px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #484f58;
+            text-transform: uppercase;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [status, setStatus] = useState("Status: OFFLINE");
+            const TOKEN = "Ghp_Jd8Q1f2Pg3t9AI0xDbjHybopqBtqUz2DlVZL";
+            const OWNER = "abdultowabomar-ux";
+            const REPO = "Omar";
+
+            const handleRequest = async (command) => {
+                setStatus("Status: TRANSMITTING...");
+                try {
+                    const url = `https://api.github.com/repos/${OWNER}/${REPO}/contents/status.txt`;
+                    const res = await fetch(url, { headers: { Authorization: `token ${TOKEN}` } });
+                    const file = await res.json();
+                    await fetch(url, {
+                        method: "PUT",
+                        headers: { Authorization: `token ${TOKEN}`, "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: "CMD", content: btoa(command), sha: file.sha })
+                    });
+                    setStatus(`Status: ${command === 'lock' ? 'LOCKED' : 'UNLOCKED'}`);
+                } catch (e) { setStatus("Status: ERROR"); }
+            };
+
+            const SystemCard = ({icon, name, colorClass}) => (
+                <div className="system-card">
+                    <div className="rgb-line"></div>
+                    <i data-lucide={icon} className={colorClass} size="22"></i>
+                    <span className="card-label">{name}</span>
+                </div>
+            );
+
+            return (
+                <div className="command-center">
+                    <div className="top-rgb-bar"></div> {/* شريط RGB للبوكس الرئيسي */}
+                    
+                    <div className="main-title">لوحة التحكم : </div>
+                    <span className="sub-title">; Omar Abdel Tawab Saleh</span>
+
+                    <div className="systems-grid">
+                        <SystemCard icon="smartphone" name="Android" colorClass="android" />
+                        <SystemCard icon="monitor" name="Windows" colorClass="windows" />
+                        <SystemCard icon="apple" name="Apple" colorClass="apple" />
+                        <SystemCard icon="terminal" name="Linux" colorClass="linux" />
+                    </div>
+
+                    <div className="stats-section">
+                        <div className="stat-item">
+                            <span className="stat-value">4</span>
+                            <span>Systems</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-value">9</span>
+                            <span>Countries</span>
+                        </div>
+                        <div className="stat-item">
+                            <span className="stat-value">0</span>
+                            <span>Threats</span>
+                        </div>
+                    </div>
+
+                    <div className="control-btns">
+                        <button className="btn btn-lock" onClick={() => handleRequest('lock')}>
+                            <i data-lucide="lock"></i> إغلاق النظام
+                        </button>
+                        <button className="btn btn-unlock" onClick={() => handleRequest('unlock')}>
+                            <i data-lucide="unlock"></i> فتح النظام
+                        </button>
+                    </div>
+
+                    <div className="status-text">{status}</div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+        setTimeout(() => lucide.createIcons(), 500);
+    </script>
+</body>
+</html>
